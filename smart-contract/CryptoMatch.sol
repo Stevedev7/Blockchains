@@ -14,7 +14,7 @@ contract CryptoMatch{
         string email;
         string [] topics;
         address [] likedAccounts ;
-        address [] rejctedAccounts;
+        address [] rejectedAccounts;
         address [] matchedAccounts;
         address [] possibleMatches;
     }
@@ -89,6 +89,56 @@ contract CryptoMatch{
                allAccounts[i].possibleMatches.push(_address);
            }
            i++;
+       }
+   }
+   
+   // Function to add users to the liked list
+   
+   function likeAccount(address _address) public{
+       uint myAccountIndex = uint(getUser(msg.sender));
+       uint likedAccount = uint(getUser(_address));
+       //Adding to likedAccounts list
+       allAccounts[myAccountIndex].likedAccounts.push(_address);
+       
+       //Removing the account from recommendations
+       removeRecommendations(_address);
+       
+       //Checking if the other person has liked this account
+       for (uint i = 0; i < allAccounts[likedAccount].likedAccounts.length; i++){
+           if(allAccounts[likedAccount].likedAccounts[i] == msg.sender){
+               
+               //Update list of both the accounts
+               allAccounts[myAccountIndex].matchedAccounts.push(_address);
+               allAccounts[likedAccount].matchedAccounts.push(msg.sender);
+               break;
+           }
+       }
+   }
+   
+   //Function to add users to rejctedAccounts
+   
+   function rejectAccount(address _address) public{
+       uint myAccountIndex = uint(getUser(msg.sender));
+       //Adding to rejectedAccounts list
+       allAccounts[myAccountIndex].rejectedAccounts.push(_address);
+       
+       //Removing the account from recommendations
+       removeRecommendations(_address);
+   }
+   
+   //Function to remove account from recommendations
+   
+   function removeRecommendations(address _address) internal{
+       uint myAccountIndex = uint(getUser(msg.sender));
+       for(uint i = 0; i < allAccounts[myAccountIndex].possibleMatches.length; i++){
+            if(allAccounts[myAccountIndex].possibleMatches[i] == _address){
+                while(i <  allAccounts[myAccountIndex].possibleMatches.length - 1){
+                     allAccounts[myAccountIndex].possibleMatches[i] =  allAccounts[myAccountIndex].possibleMatches[i + 1];
+                     i++;
+                }
+                delete allAccounts[myAccountIndex].possibleMatches[allAccounts[myAccountIndex].possibleMatches.length];
+                break;
+            }
        }
    }
 }
