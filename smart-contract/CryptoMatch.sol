@@ -14,7 +14,7 @@ contract CryptoMatch{
         address [] likedAccounts ;
         address [] rejctedAccounts;
         address [] matchedAccounts;
-        
+        address [] possibleMatches;
     }
     
    modifier onlyAdmin {
@@ -45,7 +45,13 @@ contract CryptoMatch{
         if(!existingUser){
              address [] memory tempAddress;
               string [] memory temp;
-            allAccounts.push(AccountDetails(msg.sender, _firstname, _lastname, _age, _bio, _email, temp, tempAddress, tempAddress, tempAddress));
+              address [] storage matches;
+              for(uint i = 0; i < allAccounts.length; i ++){
+                  matches.push(allAccounts[i].userAddress);
+              }
+            allAccounts.push(AccountDetails(msg.sender, _firstname, _lastname, _age, _bio, _email, temp, tempAddress, tempAddress, tempAddress, matches));
+            
+            updatePossibleMatches(msg.sender);
             
         } else {
             revert("Account already exists");
@@ -59,5 +65,15 @@ contract CryptoMatch{
            }
        }
         return -1;
+   }
+   
+   function updatePossibleMatches(address _address) internal {
+       uint i = 0;
+       while(i < allAccounts.length){
+           if(allAccounts[i].userAddress != _address){
+               allAccounts[i].possibleMatches.push(_address);
+           }
+           i++;
+       }
    }
 }
