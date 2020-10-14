@@ -1,4 +1,5 @@
 
+
 pragma experimental ABIEncoderV2;
 pragma solidity ^ 0.6.1;
 contract CryptoMatch{
@@ -16,24 +17,47 @@ contract CryptoMatch{
         
     }
     
-    address public currentAddress = msg.sender;
+   modifier onlyAdmin {
+      require(msg.sender == owner);
+      _;
+   }
+   
+   string [] public allTopics;
+   
+   function addTopics(string memory topic)public onlyAdmin{
+        allTopics.push(topic);
+   }
+   address private owner;
     
-    mapping(address => AccountDetails) internal allAccounts;
+   constructor()public{
+       owner = msg.sender;
+   }
     
-    function addUser(string memory _firstname, string memory _lastname, uint _age, string memory _bio, string memory _email) public returns(uint){
-        AccountDetails memory existingUser = allAccounts[msg.sender];
-        uint errorBit;
-        if(existingUser.age == 0){
-            string [] memory tempTopic;
-            address[] memory tempAddress;
-            allAccounts[msg.sender] = AccountDetails(msg.sender, _firstname, _lastname, _age, _bio, _email, tempTopic, tempAddress, tempAddress, tempAddress);
-        } else {
-            errorBit = 1;
+   address public currentAddress = msg.sender;
+    
+   AccountDetails [] public allAccounts;
+    
+   function addUser(string memory _firstname, string memory _lastname, uint _age, string memory _bio, string memory _email) public{
+       bool existingUser = false;
+        if(getUser(msg.sender) != -1){
+            existingUser = true;
         }
-        return errorBit;
-    }
+        if(!existingUser){
+             address [] memory tempAddress;
+              string [] memory temp;
+            allAccounts.push(AccountDetails(msg.sender, _firstname, _lastname, _age, _bio, _email, temp, tempAddress, tempAddress, tempAddress));
+            
+        } else {
+            revert("Account already exists");
+        }
+   }
     
-    function getUser(address _address) public view returns(AccountDetails memory){
-        return allAccounts[_address];
-    }
+   function getUser(address _address) public view returns(int){
+       for(uint i = 0; i < allAccounts.length; i++){
+           if(allAccounts[i].userAddress == _address){
+               return int(i);
+           }
+       }
+        return -1;
+   }
 }
