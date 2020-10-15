@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import MenuItem from '@material-ui/core/MenuItem';
+import Chip from '@material-ui/core/Chip';
 
-
+const topicofinterest = [
+  {
+    value: 'love',
+    label: 'love',
+  },
+  {
+    value: 'tech',
+    label: 'tech',
+  },
+  {
+    value: 'BTS',
+    label: 'BTS',
+  },
+  {
+    value: 'Anime',
+    label: 'Anime',
+  },
+];
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(1),
@@ -54,7 +73,48 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignIn() {
   const classes = useStyles();
+  const [values, setValues] = useState({
+		name: "",
+    age:'',
+		email: "",
+		bio: "",
+		error: "",
+		success: false,
+	});
 
+	const { name, email, age,bio, error, success } = values;
+const [topic, setTopic] = useState('');
+const handleChange = (name) => (event) => {
+		setValues({ ...values, error: false, [name]: event.target.value });
+	};
+const handleTopic = (event) => {
+    setTopic(event.target.value);
+  };
+  const handleDelete = () => {
+    setTopic('');
+  };
+  // const onSubmit = async (event) => {
+	// 	event.preventDefault();
+	// 	setValues({ ...values, error: false });
+	// 	try {
+	// 		const data = await signup({ name, email, password });
+	// 		if (data.error) {
+	// 			setValues({ ...values, error: data.error, success: false });
+	// 		} else {
+	// 			setValues({
+	// 				...values,
+	// 				name: "",
+	// 				email: "",
+	// 				bio: "",
+  //         age: "",
+	// 				error: "",
+	// 				success: true,
+	// 			});
+	// 		}
+	// 	} catch {
+	// 		console.log("error in signup");
+	// 	}
+	// };
   return (
     <Container component="main" maxWidth="xs">
         <Typography variant="h3" className={classes.boldheader}>
@@ -82,10 +142,25 @@ export default function SignIn() {
             autoComplete="email"
             autoFocus
           /> */}
-          <TextField id="text" fullWidth label="First Name" className={classes.mt}/>
-          <TextField id="number" fullWidth label="Age" className={classes.mt} />
-          <TextField id="text" fullWidth label="bio" className={classes.mt}/>
-          <TextField id="email" fullWidth label="Email Address" className={classes.mt}/>
+          <TextField id="text" fullWidth label="First Name" className={classes.mt} onChange={handleChange("name")} value={name}/>
+          <TextField id="number" fullWidth label="Age" className={classes.mt} onChange={handleChange("age")} value={age}/>
+          {topic && <Chip className={classes.mgaround} size="small" clickable label={topic} color="secondary" onDelete={handleDelete} />}
+          <TextField
+          id="standard-select-topic"
+          select
+          fullWidth
+          value={topic}
+          onChange={handleTopic}
+          helperText="Please select your interests"
+        >
+          {topicofinterest.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+          <TextField id="text" fullWidth label="bio" className={classes.mt} onChange={handleChange("bio")} value={bio}/>
+          <TextField id="email" fullWidth label="Email Address" className={classes.mt} onChange={handleChange("email")} value={email}/>
           {/* <TextField
             variant="outlined"
             margin="normal"
@@ -114,6 +189,7 @@ time submission. Enter details carefully)
             fullWidth
             variant="contained"
             color="primary"
+            // onClick={onSubmit} 
             className={classes.submit}
           >
             Submit Details

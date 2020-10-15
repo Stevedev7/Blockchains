@@ -129,15 +129,6 @@ export default function SignIn() {
 
     <Container component="main" maxWidth="md">
         <div className={classes.mb2}>
-      <Chip className={classes.mgaround}
-        size="small"
-        label="Primary Clickable"
-        clickable
-        color="primary"
-        onClick={handleClick}
-        onDelete={handleDelete}
-         deleteIcon={<DoneIcon />}
-      />
       <Chip className={classes.mgaround} size="small" clickable label="Deletable Primary" color="secondary" onDelete={handleDelete} />
       </div>
       <CssBaseline />
