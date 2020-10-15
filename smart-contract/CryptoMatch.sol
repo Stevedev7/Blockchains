@@ -183,7 +183,7 @@ contract CryptoMatch {
     }
 
     //Function to verify the topics
-    function verifyTopics(string[] memory topics) internal view {
+    function verifyTopics(string[] memory topics) public view {
         for (uint256 i = 0; i < topics.length; i++) {
             uint256 j = 0;
             while (
@@ -206,5 +206,10 @@ contract CryptoMatch {
                 revert("Invalid topic");
             }
         }
+    }
+
+    //Function to get the details of current user
+    function getMyDetails() public view returns (AccountDetails memory) {
+        return allAccounts[uint256(getUser(msg.sender))];
     }
 }
